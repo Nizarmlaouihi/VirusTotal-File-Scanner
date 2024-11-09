@@ -17,47 +17,8 @@ import queue
 
 
 # VirusTotal API Key (replace with your actual API key)
-API_KEY = '2fa4b32aae7ab6fedad434f4deb0fc94ab5595da7293ae8d0afea4f54144c6dd'
-file_queue = queue.Queue()
+API_KEY = '58d38393d2587da5d889211cd2b09f622f6be330e13b1bba5f57c50a8db5f871'
 
-def producer(file_paths):
-    """Producteur : Ajoute des fichiers dans la queue"""
-    for file_path in file_paths:
-        print(f"Producteur ajoutant {file_path} dans la queue")
-        file_queue.put(file_path)  # Mettre le fichier dans la queue
-        time.sleep(0.1)  # Simuler le délai entre les ajouts
-
-def consumer():
-    """Consommateur : Prend les fichiers de la queue et les traite"""
-    while True:
-        file_path = file_queue.get()  # Récupère un fichier de la queue
-        if file_path is None:  # Condition pour arrêter le consommateur
-            break
-        print(f"Consommateur traitant {file_path}")
-        # Simuler le traitement (par exemple, scan avec VirusTotal)
-        time.sleep(1)  # Simuler le temps de traitement
-        file_queue.task_done()  # Indiquer que le traitement est terminé
-
-# List of files to be processed
-files_to_process = ['file1.txt', 'file2.txt', 'file3.txt', 'file4.txt']
-
-# Démarrer les threads producteurs et consommateurs
-producer_thread = threading.Thread(target=producer, args=(files_to_process,))
-consumer_threads = [threading.Thread(target=consumer) for _ in range(3)]  # 3 consommateurs
-
-# Lancer le producteur et les consommateurs
-producer_thread.start()
-for t in consumer_threads:
-    t.start()
-
-# Attendre que tous les threads consommateurs aient fini
-producer_thread.join()
-for t in consumer_threads:
-    file_queue.put(None)  # Envoyer un signal de fin aux consommateurs
-for t in consumer_threads:
-    t.join()
-
-print("Traitement terminé.")
 
 
 # Semaphore to limit the number of concurrent threads accessing a resource
@@ -358,4 +319,44 @@ def update_dash_results(results):
 # Run both the Tkinter GUI and Dash app
 if __name__ == "__main__":
     threading.Thread(target=start_tkinter, daemon=True).start()  # Start Tkinter in a separate thread
-    app.run_server(port=8050) 
+    app.run_server(port=8050)
+    file_queue = queue.Queue()
+
+def producer(file_paths):
+    """Producteur : Ajoute des fichiers dans la queue"""
+    for file_path in file_paths:
+        print(f"Producteur ajoutant {file_path} dans la queue")
+        file_queue.put(file_path)  # Mettre le fichier dans la queue
+        time.sleep(0.1)  # Simuler le délai entre les ajouts
+
+def consumer():
+    """Consommateur : Prend les fichiers de la queue et les traite"""
+    while True:
+        file_path = file_queue.get()  # Récupère un fichier de la queue
+        if file_path is None:  # Condition pour arrêter le consommateur
+            break
+        print(f"Consommateur traitant {file_path}")
+        # Simuler le traitement (par exemple, scan avec VirusTotal)
+        time.sleep(1)  # Simuler le temps de traitement
+        file_queue.task_done()  # Indiquer que le traitement est terminé
+
+# List of files to be processed
+files_to_process = ['file1.txt', 'file2.txt', 'file3.txt', 'file4.txt']
+
+# Démarrer les threads producteurs et consommateurs
+producer_thread = threading.Thread(target=producer, args=(files_to_process,))
+consumer_threads = [threading.Thread(target=consumer) for _ in range(3)]  # 3 consommateurs
+
+# Lancer le producteur et les consommateurs
+producer_thread.start()
+for t in consumer_threads:
+    t.start()
+
+# Attendre que tous les threads consommateurs aient fini
+producer_thread.join()
+for t in consumer_threads:
+    file_queue.put(None)  # Envoyer un signal de fin aux consommateurs
+for t in consumer_threads:
+    t.join()
+
+print("Traitement terminé.")
