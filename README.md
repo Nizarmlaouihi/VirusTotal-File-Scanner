@@ -64,9 +64,9 @@ Run dashboard.py to view real-time CPU and memory usage during scanning.
 Code Structure
 ## VirusTotal_File_Scanner.py: Main script containing the core scanning logic.
 
-## dashboard.py: Provides a visualization dashboard (using Dash).
+## dashboard: Provides a visualization dashboard (using Dash).
 
-## report_generator.py: Generates PDF reports from scan results.
+## report_generator: Generates PDF reports from scan results.
 ## utils/: Contains helper functions for database handling, API integration, and concurrency models.
 
 Examples
